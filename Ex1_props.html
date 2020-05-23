@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Exercice 1 React - Props</title>
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <!-- babel => compilation du JSX -->
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+
+</head>
+
+<body>
+    <div id="root"></div>
+    <!-- compilation JSX => JS -->
+    <script type="text/babel">
+
+    const MESSAGES = [
+        { message : "exercice React"}, 
+        { message : "test props"}
+    ]
+
+
+    class Message extends React.Component{
+        render{
+            return(
+                <p>{
+                    this.props.title
+                }
+                </p>
+            )
+        }
+    }
+
+
+    class Messages extends React.Component{
+        render(){
+            return(
+                <div className="message">
+                {
+                    MESSAGES.map(
+                        function (element, i){
+                            return(
+                                <Message key={i} title={element.message}/>
+                            )
+                        }
+                    )
+                }
+                </div>
+            )
+        }
+    }
+
+    render(){
+        	return (
+                <div>
+                    <Messages messages={MESSAGES} />
+                </div>
+            );
+        }
+
+
+     // Rendu dans le DOM
+        ReactDOM.render(
+            <App />,
+            document.getElementById('root')
+        );
+    </script>
+</body>
+</html>

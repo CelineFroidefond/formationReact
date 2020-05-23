@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Composition-Ajout Utilisateur</title>
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+
+    <!-- permet de compiler le JSX -->
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+    <style>
+        .addStyle{
+            background-color: blue;
+            color: pink;
+        }
+    </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+
+const users = [
+        { id : 1, name : "Alice" },
+        { id : 2, name : "Alan" },
+        { id : 3, name : "Phil" },
+        { id : 4, name : "Naoudi" },
+        { id : 5, name : "Fenley" },
+    ];
+
+class Dashboard extends React.Component{
+    render(){
+    return (
+        <div>
+            {this.props.children}
+        </div>
+    );
+  }
+}
+
+class App extends React.Component {
+
+  constructor(props) {
+    super(props);
+    //En passant la constante users dans le state, on ne touche plus à la const d'origine
+    this.state = { user: '', users : users, error : false, color: "blue"};
+    console.log(this.state.color)
+  }
+
+    handleChange = (e) => {
+        this.setState({
+            //e.target.value dans handleChange permet de récupérer la valeur saisie dans un input
+            user: e.target.value
+        })
+    }
+
+    handleClick = (e) => {
+        const search = this.state.users.filter(user => user.name === this.state.user);
+
+        //Si la constante search est supérieure à 0, c'est qu'elle a trouvé un nom qui correspond 
+        //..à la valeur rentrée par l'user; donc error = true!
+        if(search.length > 0){
+            this.setState({
+                error:true
+            })
+            //permet d'arrêter la fonction
+            return;
+        }
+        this.state.users.push({
+            id : this.state.users.length+1,
+            name : this.state.user
+        })
+        this.setState({   
+        })
+    }
+
+    handleShuffle = (e) => {
+        e.preventDefault();
+        //Permet de classe un tableau en fonction de la fonction de comparaison 
+        //fonction (a,b) : compare entre l'élément du tableau et Math.random()
+        this.setState({
+            users: this.state.users.sort(() => Math.random() - 0.5)
+        });
+    }
+
+    render(){
+        return (
+            <Dashboard>
+                <input onChange={this.handleChange}/>
+                <button onClick={this.handleClick}/>
+                {
+                    //Si error est true, le message dans <p> s'affiche
+                    this.state.error && <p>Attention, l'utilisateur {this.state.user} existe déjà !</p>
+                }
+                <button className="shuffle" onClick={this.handleShuffle}>shuffle</button>
+                <ul>
+                {
+                    this.state.users.map( (user, i) => {
+                        //!!! map() est une fonction, elle doit forcément renvoyer (return) qqchose
+                        return(<User key={i} name={user.name} id={user.id}/>)
+                        //On aurait pu aussi mettre <User {...user}/> et récupérer ainsi user.id, user.name, etc...
+                        //==> solution pratique si User a beaucoup de propriétés
+                    })
+                }
+                </ul>
+            </Dashboard>
+        );
+    }
+}
+
+class User extends React.Component{
+constructor(props){
+    super(props);
+    this.state = {
+        on:false
+    }
+}
+ on = () =>{
+    this.setState({on:true})
+ }
+
+ out = () =>{
+    this.setState({on:false})
+ }
+
+  render(){
+    const style = this.state.on ? {backgroundColor:"pink", color:"green"} : {backgroundColor:"blue", color:"tile"}
+    return (
+        <li style={style} onMouseOver={this.onMouseOver} onMouseOut={this.onMouseOut}>{this.props.id} : {this.props.name}</li>
+    );
+  }
+}
+
+ReactDOM.render(
+  <App />,
+  document.getElementById('root')
+);
+
+</script>
+</body>
+</html>

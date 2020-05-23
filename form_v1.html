@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>TP - QCM</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+
+    <!-- permet de compiler le JSX -->
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+
+const questions = {
+    'symfony' : {
+        title : "Symfony design pattern",
+        choices : ['MMV', 'MVC', 'MMVV'],
+        response : 1,
+        type : "select",
+        name : "symfony",
+        feedback : 'Symfony est basé sur le pattern MVC'
+    },
+    'react' : {
+        title : "React est-il un framework ?",
+        choices : ['yes', 'no'],
+        response : 1,
+        type : "radio",
+        name : "react",
+        feedback : "React est une librairie"
+    },
+    'jsx' : {
+        title : "JSX c'est quoi ?",
+        choices : ['JSX est un langage compilé', 'JSX est un sur-ensemble développé par Facebook'],
+        response : 1,
+        type: "radio" ,
+        name : "jsx",
+        feedback : 'JSX est un sur ensemble à JS'
+    }
+}
+
+class Wrapper extends React.Component{
+   
+    render(){
+    return (
+        <div className={"wrapper "+this.props.className}>
+            {this.props.children}
+        </div>
+    );
+  }
+}
+
+class Form extends React.Component{
+    constructor(props){
+        super(props)
+    }
+
+    render(){
+    
+    return (
+        <form className="form">
+            {this.props.children}
+        </form>
+    );
+  }
+}
+
+class Input extends React.Component{
+    handleChange = (e) =>{
+		this.props.handleChange(e);
+	}
+    render(){
+        return(
+            <React.Fragment>
+            <div className="form-group">
+                <label htmlFor="exampleFormControlInput1">{this.props.label}</label>
+                <input type="email" onChange={this.handleChange} name={this.props.name} className="form-control" id="exampleFormControlInput1" placeholder="name@example.com"/>
+            </div>
+            </React.Fragment>
+        );
+    }
+}
+
+class Radio extends React.Component{
+    handleChange = (e) =>{
+		this.props.handleChange(e);
+	}
+    render(){
+        return(
+            <React.Fragment>
+            <div className="form-check">
+                <input className="form-check-input" onChange={this.handleChange} type="radio" name={this.props.name} id="exampleRadios1" value="0"/>
+                <label className="form-check-label" htmlFor="exampleRadios1">
+                    {this.props.label1}
+                </label>
+            </div>
+            <div className="form-check">
+                <input className="form-check-input" onChange={this.handleChange} type="radio" name={this.props.name} id="exampleRadios1" value="1"/>
+                <label className="form-check-label" htmlFor="exampleRadios1">
+                        {this.props.label2}
+                </label>
+            </div>
+            </React.Fragment>
+        );
+    }
+}
+
+class Select extends React.Component{
+ 
+    handleChange = (e) =>{
+		this.props.handleChange(e);
+	}
+    render(){
+        for(let i=0; i<this.props.choices.length; ++i){
+            return(
+                <div className="form-group">
+                    <label htmlFor="exampleFormControlSelect1">{this.props.label}</label>
+                    <select name ={this.props.name} onChange={this.handleChange} className="form-control" id="exampleFormControlSelect1">
+                        <option selected>Options : </option>
+                    { this.props.choices.map( (choice, index) => 
+                        { return  <option key={index} value={index}>{"choix "+ (index+1) +" : " + choice}</option> }
+                    )}
+                    </select>
+                </div>
+            );
+        }
+    }
+}
+
+class App extends React.Component{
+    //Cette classe gère l'affichage des différents composants du formulaire et récupère l'événement submit 
+    //pour le retransmettre au Composant <Form/> qui lui gère les réponses
+    constructor(props){
+        super(props);
+        this.state = {
+            email : "",
+            Q1 : questions['react'].response,
+            Q2 : questions['jsx'].response,
+            Q3 : questions['symfony'].response,
+            score : 0,
+            displayScore : false,
+            isSubmitted : false,
+            error: ""
+        }
+    }
+
+    handleChange = (e) =>{
+        let question = e.target.name;
+        let answer = e.target.value;
+        switch(question){
+            case 'Q1' : 
+            if(answer != this.state.Q1){
+                this.setState({Q1 : false});
+            }else{
+                this.state.score += 1
+            }
+            break;
+            case 'Q2' : 
+            if(answer != this.state.Q2){
+                this.setState({Q2 : false});
+            }else{
+                this.state.score += 1
+            }
+            break;
+            case 'Q3' : 
+            if(answer != this.state.Q3 ){
+                this.setState({Q3 : false});
+                console.log("index" + answer);
+            }else{
+                this.state.score += 1
+            }
+            break;
+        }
+	}
+    
+    handleSubmit = (e) => {
+        e.preventDefault();
+        this.setState({displayScore : true, isSubmitted : true})
+    }
+
+    render(){
+        return(
+        <div className="container">
+            <Form >
+                <Wrapper>
+                    <h1> QCM React</h1>
+                    <Input name="email" label="Votre Email"  handleChange={this.handleChange}/>
+                </Wrapper>
+                <Wrapper>
+                    <h2>Q1 {questions['react'].title}</h2>
+                    <p style={{color:"red"}}>{!this.state.Q1&&this.state.isSubmitted && 'Erreur : ' + questions['react'].feedback }</p>
+                    <Radio name="Q1" handleChange={this.handleChange}  label1={questions['react'].choices[0]} label2={questions['react'].choices[1]} />
+                </Wrapper>
+                <Wrapper>
+                    <h2>Q2 {questions['jsx'].title}</h2>
+                    <p style={{color:"red"}}>{ !this.state.Q2&&this.state.isSubmitted && 'Erreur : ' + questions['jsx'].feedback }</p>
+                    <Radio name="Q2" handleChange={this.handleChange} label1={questions['jsx'].choices[0]} label2={questions['jsx'].choices[1]} />
+                </Wrapper>
+                <Wrapper>
+                    <h2>Q3 {questions['symfony'].title}</h2>
+                    <p style={{color:"red"}}>{ !this.state.Q3&&this.state.isSubmitted && 'Erreur :' + questions['symfony'].feedback }</p>
+                    <Select name="Q3" handleChange={this.handleChange} label="Sélectionnez ci-dessous dans la liste la bonne définition
+                    caractérisant ce framework PHP" choices={questions['symfony'].choices} />
+                </Wrapper>   
+                <Wrapper>
+                    <button type="submit" className="btn btn-primary" onClick={this.handleSubmit}>Soumettre</button>
+                </Wrapper>             
+            </Form>
+
+            {this.state.displayScore &&  <p className="m-5">Voici votre score pour ce QCM : {this.state.score}/3</p>}
+
+        </div>
+        );
+    }
+}
+
+ReactDOM.render(
+  <App />,
+  document.getElementById('root')
+);
+
+</script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+</body>
+</html>

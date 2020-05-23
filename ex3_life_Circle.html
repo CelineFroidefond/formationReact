@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Life Cycle</title>
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+    const second = 1000;
+
+    class App extends React.Component{
+        constructor(props) {
+            super(props);
+            //On définit un état qu'on instancie à false
+            this.state = {show : false};
+        }
+        
+
+        render() {
+            console.log(this.state.show)
+            return (
+                <div>
+                <!--Si l'état est défini à "true", le composant Clock s'affiche, 
+                    Si l'état est défini à false, le composant Clock ne s'affiche pas -->
+                   { this.state.show && <Clock /> }
+                </div>
+            );
+        }
+
+        componentDidMount() {
+        // La fonction qui permet d'ôter ou non le composant. On défini l'état à true pour afficher App/,
+        // et on le passe à false au bout de 5 secondes ==> traduction: Dans 5 secondes, l'état de App passe 
+        // à false donc Clock ne s'affiche plus et disparait
+
+            this.setState({show : true });
+            
+            setTimeout(() => {
+                this.setState({ show : false });
+            }, 5 * second);
+        }
+    }
+
+    class Clock extends React.Component {
+        constructor(props) {
+            super(props);
+            // On rappelle que les state permettent de faire évoluer un variable dans un component
+            // Ici, pour mettre à jour l'horloge
+            this.state = {date: new Date()};
+            this.timer = null;
+        }
+
+        componentWillUnmount() {
+        //La fonction qui s'execute si le composant est démonté: on arrête l'horloge
+            clearInterval(this.timer);
+        }
+
+        render() {
+            return (
+                <div>
+                    <h1>Time: {this.state.date.toLocaleTimeString()}</h1>
+                </div>
+            );
+        }
+
+        componentDidMount() {
+            //This.timer = l'horloge qui s'affiche à l'écran
+            this.timer = setInterval(() => {
+                this.setState({ date : new Date })
+            }, second);
+        }
+    }
+
+    ReactDOM.render(
+        <App />,
+        document.getElementById('root')
+    );
+    </script>
+</body>
+
+</html>

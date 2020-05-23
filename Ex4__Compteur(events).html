@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="UTF-8" />
+    <title>Exo 4 Compteur</title>
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <!-- babel => compilation du JSX -->
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+    <style>
+      .heading{
+        color: purple;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+
+        class Compteur extends React.Component{
+            constructor(props) {
+                super(props);
+                this.state = {
+                    count: 0,
+                    //Le statut 'active' est false à l'initiation, true au sart, false au stop/reset
+                    active : false
+                };
+                //On déclare un timer pour pouvoir faire clearInterval(this.timer) à chaque event
+                this.timer = null;
+            }
+
+            start = () => {
+                clearInterval(this.timer);
+
+                this.timer = setInterval( () => {
+                    this.setState({
+                        //On retrouve le props step dans <App /> return(<Compteur step={1}/>)
+                        count : this.state.count + this.props.step,
+                        active : true
+                    })
+                }, this.props.time)
+            }
+
+            stop = () => {
+                clearInterval(this.timer);
+                this.setState({
+                        active : false
+                })
+            }
+
+            //Fonctions fléchées pratique pour éviter le problème du bind(this)
+            reset = () => {
+                clearInterval(this.timer);
+                this.setState({
+                    count :0,
+                    active : false
+                })
+            }
+
+            render() {
+                return (
+                <div>
+                    <button disabled = {this.state.active} onClick={this.start}>Start +{this.props.step}</button>
+                    <button disabled = {this.state.active} onClick={this.stop}>Stop</button>
+                    <button>Reset</button>
+                    <p>{this.state.count}</p>
+                </div>
+                );
+            }
+        }
+
+        class App extends React.Component{
+            render() {
+            return (
+                <div>
+                   <Compteur step = {1} time = {this.props.time} /> 
+                   <Compteur step = {2} time = {this.props.time}/> 
+                </div>
+            );
+            }
+        }
+     
+        ReactDOM.render(
+            <App />,
+            document.getElementById('root')
+        );
+    
+</script>
+</body>
+
+</html>
